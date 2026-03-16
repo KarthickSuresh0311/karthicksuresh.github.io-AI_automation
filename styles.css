@@ -353,6 +353,13 @@ h1 em {
   color: var(--muted);
 }
 
+.section-kicker {
+  max-width: 760px;
+  margin: 0 0 14px;
+  color: var(--accent-warm);
+  font-size: 0.9rem;
+}
+
 .hero-sub {
   max-width: 620px;
   margin: 24px 0 34px;
@@ -596,7 +603,9 @@ h2 {
 .services-grid,
 .architecture-grid,
 .outcomes-grid,
-.roi-grid {
+.roi-grid,
+.offer-grid,
+.faq-list {
   display: grid;
   gap: 14px;
   margin-top: 38px;
@@ -608,14 +617,17 @@ h2 {
 
 .architecture-grid,
 .outcomes-grid,
-.roi-grid {
+.roi-grid,
+.offer-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .service-card,
 .architecture-card,
 .outcome-card,
-.roi-card {
+.roi-card,
+.offer-card,
+.faq-item {
   padding: 28px;
 }
 
@@ -642,6 +654,7 @@ h2 {
 .architecture-card h3,
 .outcome-card h3,
 .roi-card h3,
+.offer-card h3,
 .step-card h3,
 .contact-proof-card h3 {
   font-size: 1.06rem;
@@ -651,6 +664,7 @@ h2 {
 .architecture-card p,
 .outcome-card p,
 .roi-card p,
+.offer-card p,
 .step-card p,
 .contact-proof-card p,
 .contact-proof-card li {
@@ -694,6 +708,81 @@ h2 {
 .roi-list li {
   padding-left: 14px;
   border-left: 2px solid rgba(240, 178, 111, 0.32);
+  color: var(--muted);
+}
+
+.offer-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.offer-card,
+.faq-item {
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  box-shadow: var(--shadow);
+}
+
+.offer-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid rgba(240, 178, 111, 0.28);
+  background: rgba(240, 178, 111, 0.08);
+  color: var(--accent-warm);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.offer-list {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.offer-list li {
+  padding-left: 14px;
+  border-left: 2px solid rgba(230, 51, 41, 0.28);
+  color: var(--muted);
+}
+
+.faq-list {
+  max-width: 980px;
+}
+
+.faq-item {
+  padding: 0;
+  overflow: hidden;
+}
+
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 22px 28px;
+  font-family: "Syne", sans-serif;
+  font-size: 1rem;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  float: right;
+  color: var(--accent);
+}
+
+.faq-item[open] summary::after {
+  content: "-";
+}
+
+.faq-item p {
+  margin: 0;
+  padding: 0 28px 24px;
   color: var(--muted);
 }
 
@@ -910,7 +999,8 @@ h2 {
 }
 
 .contact-form input,
-.contact-form textarea {
+.contact-form textarea,
+.contact-form select {
   width: 100%;
   margin-top: -2px;
   padding: 15px 16px;
@@ -929,6 +1019,7 @@ h2 {
 
 .contact-form input:focus,
 .contact-form textarea:focus,
+.contact-form select:focus,
 .btn:focus-visible,
 .nav-cta:focus-visible,
 .case-link:focus-visible,
@@ -1039,6 +1130,8 @@ h2 {
 .architecture-grid .reveal-child:nth-child(1),
 .outcomes-grid .reveal-child:nth-child(1),
 .roi-grid .reveal-child:nth-child(1),
+.offer-grid .reveal-child:nth-child(1),
+.faq-list .reveal-child:nth-child(1),
 .process-steps .reveal-child:nth-child(1),
 .contact-proof .reveal-child:nth-child(1) {
   transition-delay: 0.05s;
@@ -1049,6 +1142,8 @@ h2 {
 .architecture-grid .reveal-child:nth-child(2),
 .outcomes-grid .reveal-child:nth-child(2),
 .roi-grid .reveal-child:nth-child(2),
+.offer-grid .reveal-child:nth-child(2),
+.faq-list .reveal-child:nth-child(2),
 .process-steps .reveal-child:nth-child(2),
 .contact-proof .reveal-child:nth-child(2) {
   transition-delay: 0.11s;
@@ -1058,6 +1153,8 @@ h2 {
 .architecture-grid .reveal-child:nth-child(3),
 .outcomes-grid .reveal-child:nth-child(3),
 .roi-grid .reveal-child:nth-child(3),
+.offer-grid .reveal-child:nth-child(3),
+.faq-list .reveal-child:nth-child(3),
 .process-steps .reveal-child:nth-child(3),
 .contact-proof .reveal-child:nth-child(3) {
   transition-delay: 0.17s;
@@ -1066,11 +1163,13 @@ h2 {
 .services-grid .reveal-child:nth-child(4),
 .architecture-grid .reveal-child:nth-child(4),
 .outcomes-grid .reveal-child:nth-child(4),
+.faq-list .reveal-child:nth-child(4),
 .process-steps .reveal-child:nth-child(4) {
   transition-delay: 0.23s;
 }
 
 .architecture-grid .reveal-child:nth-child(5),
+.faq-list .reveal-child:nth-child(5),
 .process-steps .reveal-child:nth-child(5) {
   transition-delay: 0.29s;
 }
@@ -1183,6 +1282,8 @@ h2 {
   .architecture-grid,
   .outcomes-grid,
   .roi-grid,
+  .offer-grid,
+  .faq-list,
   .process-steps,
   .case-card {
     grid-template-columns: 1fr;

@@ -91,10 +91,16 @@ if (form) {
     const business = document.getElementById("business")?.value.trim() || "";
     const need = document.getElementById("need")?.value.trim() || "";
     const tools = document.getElementById("tools")?.value.trim() || "";
+    const team = document.getElementById("team")?.value.trim() || "";
+    const priority = document.getElementById("priority")?.value || "";
+    const budget = document.getElementById("budget")?.value || "";
     const bodyText = [
       `Name: ${name}`,
       `Business / Role: ${business}`,
       `Current Tools: ${tools || "Not provided"}`,
+      `Team Context: ${team || "Not provided"}`,
+      `Primary Priority: ${priority || "Not provided"}`,
+      `Budget Range: ${budget || "Not provided"}`,
       "",
       "Automation Need:",
       need,

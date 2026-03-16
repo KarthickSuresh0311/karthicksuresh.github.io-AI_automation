@@ -31,8 +31,10 @@
     <a class="nav-logo" href="#home">Karthick Suresh</a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#roi">ROI</a>
+      <a href="#offer">Start Here</a>
       <a href="#services">Services</a>
       <a href="#work">Work</a>
+      <a href="#faq">FAQ</a>
       <a href="#process">Process</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -50,9 +52,9 @@
             that pay back quickly
           </h1>
           <p class="hero-sub hero-seq">
-            I design and implement AI-powered workflow systems for lead handling,
-            inbox operations, reporting, alerts, and internal execution so teams spend
-            less time on manual coordination and more time on revenue work.
+            I design and implement AI-powered workflow systems for agencies, service businesses,
+            and lean ops teams that need faster lead handling, cleaner execution, and less
+            founder or operator time trapped in repetitive work.
           </p>
           <div class="cta-group hero-seq">
             <a class="btn btn-primary" href="#roi">See ROI Opportunities</a>
@@ -164,6 +166,7 @@
     </section>
 
     <section id="services" class="section reveal">
+      <p class="section-kicker">Best fit for businesses already feeling workflow drag in lead handling, reporting, or inbox operations.</p>
       <p class="section-eyebrow">Core Services</p>
       <h2>Automation systems designed around bottlenecks that cost money</h2>
       <p class="section-sub">
@@ -210,6 +213,44 @@
             <span class="tag">REST APIs</span>
             <span class="tag">Logging</span>
           </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="offer" class="section reveal">
+      <p class="section-eyebrow">Start Here</p>
+      <h2>Automation Audit + Workflow Plan</h2>
+      <p class="section-sub">
+        This is the easiest first step for a serious client. You bring one expensive workflow bottleneck.
+        I map the likely automation path, risks, systems involved, and the best first implementation scope.
+      </p>
+      <div class="offer-grid">
+        <article class="offer-card tilt-card reveal-child">
+          <div class="offer-label">What you get</div>
+          <ul class="offer-list">
+            <li>Clear problem framing around one workflow worth fixing first</li>
+            <li>Recommended automation architecture and tool path</li>
+            <li>Main failure points, guardrails, and fallback considerations</li>
+            <li>Priority view on where ROI is most likely to show up first</li>
+          </ul>
+        </article>
+        <article class="offer-card tilt-card reveal-child">
+          <div class="offer-label">Who this is for</div>
+          <ul class="offer-list">
+            <li>Teams already losing time every week to repetitive ops work</li>
+            <li>Businesses with lead, inbox, reporting, or routing friction</li>
+            <li>Founders or operators who need a scoped first system, not vague advice</li>
+            <li>Clients who care about reliability, not just a quick no-code build</li>
+          </ul>
+        </article>
+        <article class="offer-card tilt-card reveal-child">
+          <div class="offer-label">What happens next</div>
+          <ul class="offer-list">
+            <li>You send the bottleneck, current tools, and team context</li>
+            <li>I reply with a focused workflow plan and fit assessment</li>
+            <li>If the fit is strong, we scope the first implementation</li>
+            <li>If the fit is weak, you still leave with a clearer direction</li>
+          </ul>
         </article>
       </div>
     </section>
@@ -334,6 +375,36 @@
       </div>
     </section>
 
+    <section id="faq" class="section reveal">
+      <p class="section-eyebrow">FAQ</p>
+      <h2>Questions serious clients usually ask before hiring</h2>
+      <p class="section-sub">
+        These are the objections that matter: fit, reliability, speed, and whether the workflow is valuable enough to automate.
+      </p>
+      <div class="faq-list">
+        <details class="faq-item tilt-card reveal-child">
+          <summary>What kinds of clients are the best fit?</summary>
+          <p>The best fit is an agency, service business, or internal ops team with real workflow volume, repeated manual work, and a clear cost to delays or inconsistency.</p>
+        </details>
+        <details class="faq-item tilt-card reveal-child">
+          <summary>Do you work on tiny one-off tasks?</summary>
+          <p>Usually no. The strongest fit is a workflow that saves recurring time, improves response speed, or reduces execution risk, not a one-time admin task.</p>
+        </details>
+        <details class="faq-item tilt-card reveal-child">
+          <summary>How do you avoid brittle automations?</summary>
+          <p>By mapping logic before build, defining fallback paths, testing edge cases, and making retries, logging, and alerts part of the workflow instead of an afterthought.</p>
+        </details>
+        <details class="faq-item tilt-card reveal-child">
+          <summary>Can you work with the tools we already use?</summary>
+          <p>Yes, when the stack is a reasonable fit. Most projects involve some combination of n8n, Gmail, Sheets, Slack, webhooks, APIs, AI models, and CRM or database layers.</p>
+        </details>
+        <details class="faq-item tilt-card reveal-child">
+          <summary>What should I send in the first message?</summary>
+          <p>Describe the current workflow, where it breaks, who touches it, which tools are involved, and what delay or manual effort is costing the team today.</p>
+        </details>
+      </div>
+    </section>
+
     <section id="contact" class="cta-section reveal">
       <p class="section-eyebrow centered">Get Started</p>
       <h2>Request a focused automation audit</h2>
@@ -379,6 +450,27 @@
 
           <label for="tools">Tools you currently use</label>
           <input id="tools" name="tools" type="text" placeholder="HubSpot, Gmail, Notion, Slack, Sheets..." />
+
+          <label for="team">Team context</label>
+          <input id="team" name="team" type="text" placeholder="Agency team, founder-led business, ops team of 4..." />
+
+          <label for="priority">Primary priority</label>
+          <select id="priority" name="priority" required>
+            <option value="">Select one</option>
+            <option value="Save team time">Save team time</option>
+            <option value="Improve lead response speed">Improve lead response speed</option>
+            <option value="Reduce workflow errors">Reduce workflow errors</option>
+            <option value="Improve reporting visibility">Improve reporting visibility</option>
+          </select>
+
+          <label for="budget">Budget range for solving this well</label>
+          <select id="budget" name="budget" required>
+            <option value="">Select one</option>
+            <option value="$500-$1,500">$500-$1,500</option>
+            <option value="$1,500-$3,000">$1,500-$3,000</option>
+            <option value="$3,000-$7,500">$3,000-$7,500</option>
+            <option value="$7,500+">$7,500+</option>
+          </select>
 
           <button class="btn btn-primary btn-submit" type="submit">Request Audit by Email</button>
 
