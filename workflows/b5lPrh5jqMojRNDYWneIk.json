@@ -1,0 +1,801 @@
+{
+  "name": "Multi-Client Ad Intelligence & Risk Monitoring System",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "f4d31e77-6d1c-491e-9330-920a059379c8",
+      "name": "Every 6 Hours Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/act_123456789/insights",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "campaign_name,spend,clicks,conversions,revenue,cpc,ctr,account_name"
+            },
+            {
+              "name": "date_preset",
+              "value": "last_7d"
+            },
+            {
+              "name": "level",
+              "value": "campaign"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e1976e97-c00a-4c3c-9d0d-b82f50fd9efc",
+      "name": "Fetch Meta Ads Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        304,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://googleads.googleapis.com/v14/customers/1234567890/googleAds:search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "SELECT campaign.name, metrics.cost_micros, metrics.clicks, metrics.conversions, metrics.all_conversions_value, metrics.average_cpc, metrics.ctr FROM campaign WHERE segments.date DURING LAST_7_DAYS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "76f64e6b-2be1-46c8-aa4c-ef13fd640c35",
+      "name": "Fetch Google Ads Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        304,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simulate Meta Ads data with realistic structure\nconst metaSimulated = [\n  {\n    source: 'meta',\n    client_name: 'Acme Corp',\n    campaign_name: 'Acme - Summer Sale 2024',\n    spend: 4200,\n    clicks: 8400,\n    conversions: 210,\n    revenue: 16800,\n    cpc: 0.50,\n    ctr: 3.2,\n    roas: 4.0\n  },\n  {\n    source: 'meta',\n    client_name: 'BlueWave Agency',\n    campaign_name: 'BlueWave - Lead Gen Q4',\n    spend: 3100,\n    clicks: 4200,\n    conversions: 62,\n    revenue: 4960,\n    cpc: 0.74,\n    ctr: 1.8,\n    roas: 1.6\n  },\n  {\n    source: 'meta',\n    client_name: 'TechStart Inc',\n    campaign_name: 'TechStart - Brand Awareness',\n    spend: 1800,\n    clicks: 9000,\n    conversions: 90,\n    revenue: 5400,\n    cpc: 0.20,\n    ctr: 4.5,\n    roas: 3.0\n  }\n];\n\nreturn metaSimulated.map(item => ({ json: item }));"
+      },
+      "id": "c24d01cb-5f1d-44b9-aabe-fb37aeabb184",
+      "name": "Simulate Meta Ads Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simulate Google Ads data with realistic structure\nconst googleSimulated = [\n  {\n    source: 'google',\n    client_name: 'Acme Corp',\n    campaign_name: 'Acme - Google Search Brand',\n    spend: 5100,\n    clicks: 6120,\n    conversions: 180,\n    revenue: 25500,\n    cpc: 0.83,\n    ctr: 2.9,\n    roas: 5.0\n  },\n  {\n    source: 'google',\n    client_name: 'BlueWave Agency',\n    campaign_name: 'BlueWave - Google Display',\n    spend: 2200,\n    clicks: 2640,\n    conversions: 33,\n    revenue: 3300,\n    cpc: 0.83,\n    ctr: 1.2,\n    roas: 1.5\n  },\n  {\n    source: 'google',\n    client_name: 'RetailMax',\n    campaign_name: 'RetailMax - Shopping Ads',\n    spend: 7800,\n    clicks: 15600,\n    conversions: 468,\n    revenue: 46800,\n    cpc: 0.50,\n    ctr: 5.1,\n    roas: 6.0\n  }\n];\n\nreturn googleSimulated.map(item => ({ json: item }));"
+      },
+      "id": "1071628e-90dc-4ffc-ba3f-a438245ea4df",
+      "name": "Simulate Google Ads Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "id": "6963c8a4-21e4-4c09-949b-e7c3f4ceaf8f",
+      "name": "Merge All Campaign Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        752,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalization & Scoring Layer\nconst items = $input.all();\nconst normalizedItems = [];\n\nfor (const item of items) {\n  const d = item.json;\n\n  const spend = parseFloat(d.spend) || 0;\n  const clicks = parseFloat(d.clicks) || 0;\n  const conversions = parseFloat(d.conversions) || 0;\n  const revenue = parseFloat(d.revenue) || 0;\n  const cpc = parseFloat(d.cpc) || 0;\n  const ctr = parseFloat(d.ctr) || 0;\n  const roas = parseFloat(d.roas) || (spend > 0 ? revenue / spend : 0);\n\n  // Derived Metrics\n  const cost_per_conversion = conversions > 0 ? spend / conversions : 0;\n  const profit = revenue - spend;\n\n  // Performance Score (0-100)\n  // ROAS weight: 60%, CTR weight: 40%\n  const roas_score = Math.min((roas / 6) * 60, 60);\n  const ctr_score = Math.min((ctr / 5) * 40, 40);\n  const performance_score = Math.round(roas_score + ctr_score);\n\n  // Campaign Grade\n  let grade;\n  if (roas > 4) grade = 'A';\n  else if (roas >= 2) grade = 'B';\n  else grade = 'C';\n\n  // Simulated previous period CPC (±20% variation for demo)\n  const prev_cpc = cpc * (0.85 + Math.random() * 0.3);\n  const cpc_increase_pct = prev_cpc > 0 ? ((cpc - prev_cpc) / prev_cpc) * 100 : 0;\n\n  // Simulated previous period spend & conversions\n  const prev_spend = spend * (0.8 + Math.random() * 0.3);\n  const prev_conversions = conversions * (0.9 + Math.random() * 0.3);\n  const spend_increase_pct = prev_spend > 0 ? ((spend - prev_spend) / prev_spend) * 100 : 0;\n  const conversion_growth_pct = prev_conversions > 0 ? ((conversions - prev_conversions) / prev_conversions) * 100 : 0;\n\n  normalizedItems.push({\n    json: {\n      source: d.source,\n      client_name: d.client_name,\n      campaign_name: d.campaign_name,\n      spend,\n      clicks,\n      conversions,\n      revenue,\n      cpc,\n      ctr,\n      roas,\n      cost_per_conversion: parseFloat(cost_per_conversion.toFixed(2)),\n      profit: parseFloat(profit.toFixed(2)),\n      performance_score,\n      grade,\n      prev_cpc: parseFloat(prev_cpc.toFixed(2)),\n      cpc_increase_pct: parseFloat(cpc_increase_pct.toFixed(2)),\n      prev_spend: parseFloat(prev_spend.toFixed(2)),\n      spend_increase_pct: parseFloat(spend_increase_pct.toFixed(2)),\n      conversion_growth_pct: parseFloat(conversion_growth_pct.toFixed(2)),\n      timestamp: new Date().toISOString()\n    }\n  });\n}\n\nreturn normalizedItems;"
+      },
+      "id": "819e16e3-4968-4eaa-b542-61ca5edca2b7",
+      "name": "Normalize & Score Campaigns",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cpc-anomaly",
+              "leftValue": "={{ $json.cpc_increase_pct }}",
+              "rightValue": 30,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "8b308103-ce10-4ed2-ba23-cb00d0348daf",
+      "name": "Anomaly: CPC Spike > 30%",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "roas-low",
+              "leftValue": "={{ $json.roas }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "cefecad2-2850-4c63-af02-93459876d0ca",
+      "name": "Anomaly: ROAS Below 2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "spend-spike",
+              "leftValue": "={{ $json.spend_increase_pct }}",
+              "rightValue": 40,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "conv-flat",
+              "leftValue": "={{ $json.conversion_growth_pct }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b0f43d4d-a37a-4cf8-b21e-a75795df1d61",
+      "name": "Anomaly: Spend Spike No Conversion Growth",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $json;\nconst anomalies = [];\nlet risk_reason = '';\nlet suggested_action = '';\n\nif (d.cpc_increase_pct > 30) {\n  anomalies.push('CPC spike of ' + d.cpc_increase_pct.toFixed(1) + '%');\n  suggested_action += 'Review bidding strategy and keyword targeting. ';\n}\nif (d.roas < 2) {\n  anomalies.push('ROAS critically low at ' + d.roas.toFixed(2));\n  suggested_action += 'Pause underperforming ad sets. Reallocate budget to top performers. ';\n}\nif (d.spend_increase_pct > 40 && d.conversion_growth_pct < 5) {\n  anomalies.push('Spend up ' + d.spend_increase_pct.toFixed(1) + '% with only ' + d.conversion_growth_pct.toFixed(1) + '% conversion growth');\n  suggested_action += 'Audit audience targeting and landing page conversion rate. ';\n}\nif (d.grade === 'C') {\n  anomalies.push('Grade C campaign — ROAS below acceptable threshold');\n  suggested_action += 'Consider campaign restructure or temporary pause pending review. ';\n}\n\nrisk_reason = anomalies.join('; ');\n\nreturn [{\n  json: {\n    ...d,\n    anomalies,\n    risk_reason,\n    suggested_action: suggested_action.trim(),\n    is_at_risk: anomalies.length > 0\n  }\n}];"
+      },
+      "id": "77cf5446-da80-47f8-b5c7-ffad32975462",
+      "name": "Tag Anomalies & Risk Reasons",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-at-risk",
+              "leftValue": "={{ $json.is_at_risk }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "4dca532d-5fc1-411e-8318-1c8c24743399",
+      "name": "Is Campaign At Risk?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "-1001234567890",
+        "text": "=🚨 *AD RISK ALERT — {{ $json.source.toUpperCase() }}*\n\n👤 *Client:* {{ $json.client_name }}\n📢 *Campaign:* {{ $json.campaign_name }}\n📊 *Grade:* {{ $json.grade }} | *Performance Score:* {{ $json.performance_score }}/100\n\n⚠️ *Risk Reason:*\n{{ $json.risk_reason }}\n\n📉 *Key Metrics:*\n• ROAS: {{ $json.roas }}\n• CPC: ${{ $json.cpc }} (↑{{ $json.cpc_increase_pct }}% vs prev)\n• Spend: ${{ $json.spend }} (↑{{ $json.spend_increase_pct }}%)\n• Conv Growth: {{ $json.conversion_growth_pct }}%\n• Profit: ${{ $json.profit }}\n\n✅ *Suggested Action:*\n{{ $json.suggested_action }}\n\n🕐 _{{ $json.timestamp }}_",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "a16f2b89-c3ba-4227-b7ef-a20df398c818",
+      "name": "Send Telegram Risk Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1856,
+        272
+      ],
+      "webhookId": "6d61ca85-f493-4b74-985b-e17ee22cfdfd"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0123456789",
+          "mode": "id"
+        },
+        "messageType": "block",
+        "blocksUi": "=[\n  {\n    \"type\": \"header\",\n    \"text\": { \"type\": \"plain_text\", \"text\": \"🚨 Ad Risk Alert — {{ $json.client_name }}\" }\n  },\n  {\n    \"type\": \"section\",\n    \"fields\": [\n      { \"type\": \"mrkdwn\", \"text\": \"*Client:*\\n{{ $json.client_name }}\" },\n      { \"type\": \"mrkdwn\", \"text\": \"*Campaign:*\\n{{ $json.campaign_name }}\" },\n      { \"type\": \"mrkdwn\", \"text\": \"*Grade:*\\n{{ $json.grade }}\" },\n      { \"type\": \"mrkdwn\", \"text\": \"*Performance Score:*\\n{{ $json.performance_score }}/100\" },\n      { \"type\": \"mrkdwn\", \"text\": \"*ROAS:*\\n{{ $json.roas }}\" },\n      { \"type\": \"mrkdwn\", \"text\": \"*Profit:*\\n${{ $json.profit }}\" }\n    ]\n  },\n  {\n    \"type\": \"section\",\n    \"text\": { \"type\": \"mrkdwn\", \"text\": \"*⚠️ Risk Reason:*\\n{{ $json.risk_reason }}\" }\n  },\n  {\n    \"type\": \"section\",\n    \"text\": { \"type\": \"mrkdwn\", \"text\": \"*✅ Suggested Action:*\\n{{ $json.suggested_action }}\" }\n  },\n  {\n    \"type\": \"context\",\n    \"elements\": [{ \"type\": \"mrkdwn\", \"text\": \"Reported at {{ $json.timestamp }}\" }]\n  }\n]",
+        "otherOptions": {}
+      },
+      "id": "fff487cf-8716-49ac-b159-da37c692d654",
+      "name": "Send Slack Risk Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        448
+      ],
+      "webhookId": "2911f6ff-22f2-4437-bc61-bfa6f8444e44"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $json;\n\nconst roas_trend = d.roas < 2 ? 'critically low' : d.roas < 3 ? 'below target' : d.roas < 5 ? 'acceptable' : 'strong';\nconst cpc_trend = d.cpc_increase_pct > 30 ? 'a sharp increase of ' + d.cpc_increase_pct.toFixed(1) + '%' : d.cpc_increase_pct > 10 ? 'a moderate increase of ' + d.cpc_increase_pct.toFixed(1) + '%' : 'stable performance';\nconst conv_status = d.conversion_growth_pct < 0 ? 'declining conversions' : d.conversion_growth_pct < 5 ? 'stagnant conversion growth' : 'improving conversions';\nconst profit_status = d.profit > 0 ? 'generating $' + d.profit.toFixed(2) + ' in profit' : 'operating at a loss of $' + Math.abs(d.profit).toFixed(2);\n\nlet executive_summary = `EXECUTIVE PERFORMANCE REPORT — ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\\n\\n`;\nexecutive_summary += `CLIENT: ${d.client_name}\\n`;\nexecutive_summary += `CAMPAIGN: ${d.campaign_name} (${d.source.toUpperCase()})\\n`;\nexecutive_summary += `OVERALL GRADE: ${d.grade} | PERFORMANCE SCORE: ${d.performance_score}/100\\n\\n`;\nexecutive_summary += `SUMMARY:\\n`;\nexecutive_summary += `${d.client_name}'s campaign \"${d.campaign_name}\" is currently ${roas_trend} with a ROAS of ${d.roas.toFixed(2)}, `;\nexecutive_summary += `showing ${cpc_trend} in cost-per-click and ${conv_status}. `;\nexecutive_summary += `The campaign is ${profit_status} on $${d.spend.toFixed(2)} in total spend.\\n\\n`;\n\nif (d.is_at_risk) {\n  executive_summary += `RISK FLAGS:\\n${d.risk_reason}\\n\\n`;\n  executive_summary += `RECOMMENDED ACTIONS:\\n${d.suggested_action}\\n\\n`;\n} else {\n  executive_summary += `STATUS: Campaign is performing within acceptable parameters. Continue monitoring.\\n\\n`;\n}\n\nexecutive_summary += `KEY METRICS:\\n`;\nexecutive_summary += `• Spend: $${d.spend.toFixed(2)} | Revenue: $${d.revenue.toFixed(2)} | Profit: $${d.profit.toFixed(2)}\\n`;\nexecutive_summary += `• ROAS: ${d.roas.toFixed(2)} | CPC: $${d.cpc.toFixed(2)} | CTR: ${d.ctr.toFixed(2)}%\\n`;\nexecutive_summary += `• Conversions: ${d.conversions} | Cost/Conv: $${d.cost_per_conversion.toFixed(2)}\\n`;\nexecutive_summary += `• Performance Score: ${d.performance_score}/100`;\n\nreturn [{\n  json: {\n    ...d,\n    executive_summary\n  }\n}];"
+      },
+      "id": "ffae7e7b-e484-4db0-ba5a-f34d74798bb8",
+      "name": "Generate Executive Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2064,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1PXRnWqtHeFBxUUHOWwb0iKGAbJARaEjrYXxiXsORyXo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PXRnWqtHeFBxUUHOWwb0iKGAbJARaEjrYXxiXsORyXo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Name",
+              "displayName": "Client Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campaign Name",
+              "displayName": "Campaign Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spend",
+              "displayName": "Spend",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Revenue",
+              "displayName": "Revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Profit",
+              "displayName": "Profit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clicks",
+              "displayName": "Clicks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Conversions",
+              "displayName": "Conversions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CPC",
+              "displayName": "CPC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CTR",
+              "displayName": "CTR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ROAS",
+              "displayName": "ROAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cost Per Conversion",
+              "displayName": "Cost Per Conversion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Performance Score",
+              "displayName": "Performance Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Grade",
+              "displayName": "Grade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CPC Increase %",
+              "displayName": "CPC Increase %",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spend Increase %",
+              "displayName": "Spend Increase %",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Conversion Growth %",
+              "displayName": "Conversion Growth %",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Is At Risk",
+              "displayName": "Is At Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Risk Reason",
+              "displayName": "Risk Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Suggested Action",
+              "displayName": "Suggested Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Executive Summary",
+              "displayName": "Executive Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "54f3c30b-e034-427c-86d9-ea69c4073493",
+      "name": "Append to Google Sheets Report",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        2288,
+        384
+      ]
+    }
+  ],
+  "connections": {
+    "Every 6 Hours Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Meta Ads Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Google Ads Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Meta Ads Data": {
+      "main": [
+        [
+          {
+            "node": "Simulate Meta Ads Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Google Ads Data": {
+      "main": [
+        [
+          {
+            "node": "Simulate Google Ads Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate Meta Ads Response": {
+      "main": [
+        [
+          {
+            "node": "Merge All Campaign Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate Google Ads Response": {
+      "main": [
+        [
+          {
+            "node": "Merge All Campaign Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge All Campaign Data": {
+      "main": [
+        [
+          {
+            "node": "Normalize & Score Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize & Score Campaigns": {
+      "main": [
+        [
+          {
+            "node": "Anomaly: CPC Spike > 30%",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Anomaly: ROAS Below 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Anomaly: Spend Spike No Conversion Growth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anomaly: CPC Spike > 30%": {
+      "main": [
+        [
+          {
+            "node": "Tag Anomalies & Risk Reasons",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tag Anomalies & Risk Reasons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anomaly: ROAS Below 2": {
+      "main": [
+        [
+          {
+            "node": "Tag Anomalies & Risk Reasons",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tag Anomalies & Risk Reasons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anomaly: Spend Spike No Conversion Growth": {
+      "main": [
+        [
+          {
+            "node": "Tag Anomalies & Risk Reasons",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tag Anomalies & Risk Reasons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tag Anomalies & Risk Reasons": {
+      "main": [
+        [
+          {
+            "node": "Is Campaign At Risk?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Campaign At Risk?": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Risk Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Slack Risk Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Executive Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Risk Alert": {
+      "main": [
+        [
+          {
+            "node": "Generate Executive Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack Risk Alert": {
+      "main": [
+        [
+          {
+            "node": "Generate Executive Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Executive Summary": {
+      "main": [
+        [
+          {
+            "node": "Append to Google Sheets Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 29
+}
