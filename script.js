@@ -87,47 +87,58 @@ if (form) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    const formData = new FormData(form);
     const name = document.getElementById("name")?.value.trim() || "";
+    const email = document.getElementById("email")?.value.trim() || "";
     const business = document.getElementById("business")?.value.trim() || "";
     const need = document.getElementById("need")?.value.trim() || "";
     const tools = document.getElementById("tools")?.value.trim() || "";
     const team = document.getElementById("team")?.value.trim() || "";
     const priority = document.getElementById("priority")?.value || "";
     const budget = document.getElementById("budget")?.value || "";
-    const bodyText = [
-      `Name: ${name}`,
-      `Business / Role: ${business}`,
-      `Current Tools: ${tools || "Not provided"}`,
-      `Team Context: ${team || "Not provided"}`,
-      `Primary Priority: ${priority || "Not provided"}`,
-      `Budget Range: ${budget || "Not provided"}`,
-      "",
-      "Automation Need:",
-      need,
-    ].join("\n");
-
-    const subject = encodeURIComponent(
-      `Automation Audit Request - ${business || name || "New Lead"}`
+    formData.set("_subject", `Workflow Plan Request - ${business || name || "New Lead"}`);
+    formData.set("_replyto", email);
+    formData.set(
+      "submission_summary",
+      [
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Business / Role: ${business}`,
+        `Current Tools: ${tools || "Not provided"}`,
+        `Team Context: ${team || "Not provided"}`,
+        `Primary Priority: ${priority || "Not provided"}`,
+        `Budget Range: ${budget || "Not provided"}`,
+        "",
+        "Automation Need:",
+        need,
+      ].join("\n")
     );
-    const body = encodeURIComponent(bodyText);
 
     if (formStatus) {
-      formStatus.textContent = "Opening your email client and copying your request as backup.";
+      formStatus.textContent = "Sending your workflow request...";
     }
 
-    if (navigator.clipboard?.writeText) {
-      try {
-        await navigator.clipboard.writeText(
-          `Subject: Automation Audit Request - ${business || name || "New Lead"}\n\n${bodyText}`
-        );
-      } catch (error) {
-        if (formStatus) {
-          formStatus.textContent = "Opening your email client. Copy failed, but your request is still prefilled in the draft.";
-        }
+    try {
+      const response = await fetch(form.action, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Form submission failed.");
+      }
+
+      form.reset();
+      if (formStatus) {
+        formStatus.textContent = "Request sent. Check your inbox for the FormSubmit activation email if this is the first submission.";
+      }
+    } catch (error) {
+      if (formStatus) {
+        formStatus.textContent = "Form submit failed. You can retry in a moment or email karthicksuresh0311@gmail.com directly.";
       }
     }
-
-    window.location.href =
-      `mailto:karthicksuresh0311@gmail.com?subject=${subject}&body=${body}`;
   });
 }

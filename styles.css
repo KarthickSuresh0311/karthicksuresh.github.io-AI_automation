@@ -1012,6 +1012,15 @@ h2 {
   transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
 }
 
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .contact-form input::placeholder,
 .contact-form textarea::placeholder {
   color: var(--faint);
