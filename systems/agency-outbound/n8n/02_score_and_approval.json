@@ -1,0 +1,454 @@
+{
+  "name": "Agency Outbound - 02 Score And Approval",
+  "description": "Reads new leads, fetches site context, scores fit with Gemini, drafts outreach, and sends Telegram approval cards.",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1060,
+        260
+      ],
+      "id": "9fe49a0e-423c-40cc-a30c-c70fb8f3f4f1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Config",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -820,
+        120
+      ],
+      "id": "5d2a5945-e28b-4419-bc9a-81b14f4f7398",
+      "name": "Read Config"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -820,
+        340
+      ],
+      "id": "e269f06e-5129-4ea8-969b-d51952f51599",
+      "name": "Read Leads"
+    },
+    {
+      "parameters": {
+        "jsCode": "const configRows = $items('Read Config', 0).map((item) => item.json);\nconst config = Object.fromEntries(configRows.map((row) => [row.key, row.value]));\nconst leads = $items('Read Leads', 0)\n  .map((item) => item.json)\n  .filter((row) => row.status === 'new')\n  .slice(0, Math.max(1, Number(config.daily_send_limit || 10) * 3));\nreturn leads.map((lead) => ({ json: { ...lead, _config: config } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        260
+      ],
+      "id": "f31a0dc1-6296-4e47-90ac-3c7f2066d5a2",
+      "name": "Prepare Leads"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.website}}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "string"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        260
+      ],
+      "id": "37c8470f-a4cd-4462-b71d-fce6ae9169c8",
+      "name": "Fetch Website"
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = String($json.body || $json.data || '');\nconst text = html.replace(/<script[\\s\\S]*?<\\/script>/gi, ' ').replace(/<style[\\s\\S]*?<\\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' ').trim().slice(0, 4000);\nreturn [{ json: { ...$('Prepare Leads').first().json, website_text: text } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        260
+      ],
+      "id": "96e10537-4aa4-4b3c-a65e-8ad02178c78f",
+      "name": "Extract Website Text"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=YOUR_GEMINI_API_KEY",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"contents\":[{\"parts\":[{\"text\":\"You are qualifying outbound prospects for a service business automation offer.\\n\\nTarget ICP: agency owners\\nOffer: lead response automation\\n\\nYour job:\\n1. Decide if the lead is a good fit for this exact offer.\\n2. Write a realistic pain hypothesis based only on the provided lead and website context.\\n3. Generate a short personalized cold email draft.\\n\\nRules:\\n- Do not invent facts.\\n- Do not broaden the offer.\\n- Focus only on lead response speed, manual lead qualification, inbox triage, routing, and follow-up friction.\\n- Keep the email under 120 words.\\n- No hype, no emojis, no fake social proof.\\n- Output strict JSON only.\\n\\nLead:\\nName: {{$json.name}}\\nRole: {{$json.role}}\\nCompany: {{$json.company}}\\nWebsite: {{$json.website}}\\n\\nWebsite Context:\\n{{$json.website_text}}\\n\\nReturn this exact shape:\\n{\\n  \\\"fit_score\\\": 0,\\n  \\\"fit_reason\\\": \\\"\\\",\\n  \\\"pain_hypothesis\\\": \\\"\\\",\\n  \\\"personalization_line\\\": \\\"\\\",\\n  \\\"subject_draft\\\": \\\"\\\",\\n  \\\"body_draft\\\": \\\"\\\"\\n}\"}]}]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        180,
+        260
+      ],
+      "id": "75f17d22-c7f9-4ad8-8028-26f41c20533f",
+      "name": "Gemini Score And Draft"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.candidates?.[0]?.content?.parts?.[0]?.text || '{}';\nconst clean = raw.replace(/^```json\\s*/i, '').replace(/^```/i, '').replace(/```$/i, '').trim();\nconst parsed = JSON.parse(clean);\nreturn [{ json: { ...$('Extract Website Text').first().json, ...parsed, status: 'drafted' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        260
+      ],
+      "id": "99c7824a-c1d3-47fd-9c35-f4d1a23f204c",
+      "name": "Parse Gemini JSON"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ Number($json.fit_score || 0) }}",
+              "rightValue": "={{ Number($json._config.min_fit_score || 7) }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        700,
+        260
+      ],
+      "id": "ee4777fa-3615-47eb-b368-60909f700d9c",
+      "name": "Fit Threshold"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json._config.telegram_chat_id || 'YOUR_TELEGRAM_CHAT_ID'}}",
+        "text": "=Lead: {{$json.name}} | {{$json.company}}\\nRole: {{$json.role}}\\nWebsite: {{$json.website}}\\nFit Score: {{$json.fit_score}}/10\\n\\nPain Hypothesis:\\n{{$json.pain_hypothesis}}\\n\\nPersonalization:\\n{{$json.personalization_line}}\\n\\nSubject:\\n{{$json.subject_draft}}\\n\\nDraft:\\n{{$json.body_draft}}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Approve",
+                    "additionalFields": {
+                      "callback_data": "=approve|{{$json.lead_id}}"
+                    }
+                  },
+                  {
+                    "text": "Reject",
+                    "additionalFields": {
+                      "callback_data": "=reject|{{$json.lead_id}}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Regenerate",
+                    "additionalFields": {
+                      "callback_data": "=regen|{{$json.lead_id}}"
+                    }
+                  },
+                  {
+                    "text": "Edit",
+                    "additionalFields": {
+                      "callback_data": "=edit|{{$json.lead_id}}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        180
+      ],
+      "id": "83488f56-f152-4810-b74c-2a438b22eb65",
+      "name": "Send Telegram Approval"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [
+            "lead_id"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1220,
+        180
+      ],
+      "id": "0860bf2f-5ff1-4c3f-b044-17403cc7099a",
+      "name": "Upsert Approved Draft"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, status: 'rejected', approval_state: 'rejected', last_action: 'fit_rejected' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        360
+      ],
+      "id": "2c359985-4e93-4914-a901-93456f5f8e60",
+      "name": "Prepare Rejected Row"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [
+            "lead_id"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1220,
+        360
+      ],
+      "id": "0991cbdf-59a4-479b-b82e-c3df6df55a4d",
+      "name": "Upsert Rejected Row"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Config",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Config": {
+      "main": [
+        [
+          {
+            "node": "Prepare Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Leads": {
+      "main": [
+        [
+          {
+            "node": "Prepare Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Leads": {
+      "main": [
+        [
+          {
+            "node": "Fetch Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Website": {
+      "main": [
+        [
+          {
+            "node": "Extract Website Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Website Text": {
+      "main": [
+        [
+          {
+            "node": "Gemini Score And Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Score And Draft": {
+      "main": [
+        [
+          {
+            "node": "Parse Gemini JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Gemini JSON": {
+      "main": [
+        [
+          {
+            "node": "Fit Threshold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fit Threshold": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Approval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Rejected Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Approval": {
+      "main": [
+        [
+          {
+            "node": "Upsert Approved Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Rejected Row": {
+      "main": [
+        [
+          {
+            "node": "Upsert Rejected Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "versionCounter": 1
+}

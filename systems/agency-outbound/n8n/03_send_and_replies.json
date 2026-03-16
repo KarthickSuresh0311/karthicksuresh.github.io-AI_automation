@@ -1,0 +1,667 @@
+{
+  "name": "Agency Outbound - 03 Send And Replies",
+  "description": "Handles Telegram approval callbacks, Gmail sending, Gmail reply classification, and follow-up approvals.",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "callback_query",
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1080,
+        160
+      ],
+      "id": "0caf8b4f-e99a-48e3-b776-c1bb548bc7bc",
+      "name": "Telegram Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json.callback_query?.data || '';\nconst text = $json.message?.text || '';\nconst [action, leadId] = payload.split('|');\nreturn [{ json: { action, lead_id: leadId || '', text, callback_query: $json.callback_query || null } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -840,
+        160
+      ],
+      "id": "bbfc8435-0ba3-4855-b6fb-7b5ed7ef9bd2",
+      "name": "Parse Telegram Input"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -600,
+        160
+      ],
+      "id": "5fe86249-f7dc-4219-a2b7-e8238a15f457",
+      "name": "Read Leads"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $('Parse Telegram Input').first().json;\nconst allLeads = $input.all().map((item) => item.json);\nconst match = allLeads.find((row) => row.lead_id === input.lead_id) || {};\nreturn [{ json: { ...match, ...input } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        160
+      ],
+      "id": "cb4d6d0d-a0b9-4cea-b130-17659a81a8f2",
+      "name": "Match Lead"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.action}}",
+                    "rightValue": "approve",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.action}}",
+                    "rightValue": "reject",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.action}}",
+                    "rightValue": "regen",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -120,
+        160
+      ],
+      "id": "74d6a193-fcde-4e46-b36e-1eeaf9a5d64b",
+      "name": "Route Callback"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, status: 'approved', approval_state: 'approved', last_action: 'telegram_approved' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        40
+      ],
+      "id": "262c4ce4-feac-4344-a96d-950c706e4c5f",
+      "name": "Prepare Approve Update"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, status: 'rejected', approval_state: 'rejected', last_action: 'telegram_rejected' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        160
+      ],
+      "id": "5dcb1647-0e66-4b4f-82d7-a37e9576db48",
+      "name": "Prepare Reject Update"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, status: 'new', approval_state: '', approval_message_id: '', subject_draft: '', body_draft: '', last_action: 'telegram_regenerate' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        280
+      ],
+      "id": "e2657477-13a2-4c46-bcc3-002de7c8d2a2",
+      "name": "Prepare Regenerate Update"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [
+            "lead_id"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        380,
+        160
+      ],
+      "id": "414efe37-66de-4b2f-9f99-d0266f7ad228",
+      "name": "Upsert Lead Action"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1080,
+        560
+      ],
+      "id": "3bdaf02b-0973-4281-a9b6-00a3cb0317f7",
+      "name": "Send Schedule"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Config",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -840,
+        480
+      ],
+      "id": "7b2b1385-41d8-4922-b2cb-e7569f557666",
+      "name": "Read Config"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -840,
+        640
+      ],
+      "id": "dbdf8c48-91d3-4a97-a698-b97db56d9d71",
+      "name": "Read Leads For Send"
+    },
+    {
+      "parameters": {
+        "jsCode": "const configRows = $items('Read Config', 0).map((item) => item.json);\nconst config = Object.fromEntries(configRows.map((row) => [row.key, row.value]));\nif (String(config.send_enabled).toLowerCase() !== 'true') return [];\nconst leads = $items('Read Leads For Send', 0)\n  .map((item) => item.json)\n  .filter((row) => row.status === 'approved')\n  .slice(0, Math.max(1, Number(config.daily_send_limit || 10)));\nreturn leads.map((lead) => ({ json: { ...lead, _config: config } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        560
+      ],
+      "id": "8a41251b-26c2-462d-b596-cc878078c43f",
+      "name": "Select Approved Leads"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "={{$json.subject_draft}}",
+        "message": "={{$json.body_draft}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        560
+      ],
+      "id": "7dd38b2f-4ae5-49f9-b788-b83ecb0c2990",
+      "name": "Send Gmail"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$('Select Approved Leads').first().json, status: 'sent', sent_at: new Date().toISOString(), last_contact_at: new Date().toISOString(), followup_step: 0, last_action: 'gmail_sent' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        560
+      ],
+      "id": "638ba52c-4cc8-47de-8118-a1d0e11b4dbe",
+      "name": "Prepare Sent Update"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [
+            "lead_id"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        180,
+        560
+      ],
+      "id": "b08e06c0-044e-424a-8d81-bdc75475d7c0",
+      "name": "Upsert Sent Lead"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1080,
+        900
+      ],
+      "id": "ce6412fe-5e9c-422f-a8cd-dbfb8cbd9abc",
+      "name": "Gmail Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { from_email: $json.From, subject: $json.Subject, body_excerpt: $json.snippet, gmail_thread_id: $json.threadId || '' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -840,
+        900
+      ],
+      "id": "1a3db876-d616-4948-963a-800f00f7de30",
+      "name": "Normalize Reply"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=YOUR_GEMINI_API_KEY",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"contents\":[{\"parts\":[{\"text\":\"You are classifying replies to an outbound email campaign for agency owners.\\n\\nOffer: lead response automation\\n\\nClassify the reply into one of:\\n- positive\\n- neutral\\n- objection\\n- unsubscribe\\n- not_relevant\\n\\nThen write a short suggested response.\\n\\nRules:\\n- If the message asks not to be contacted, use unsubscribe.\\n- If the message shows interest, use positive.\\n- Keep suggested_response under 100 words.\\n- Do not promise pricing or timelines.\\n- Output strict JSON only.\\n\\nReply Subject:\\n{{$json.subject}}\\n\\nReply Body:\\n{{$json.body_excerpt}}\\n\\nReturn:\\n{\\n  \\\"classification\\\": \\\"\\\",\\n  \\\"reason\\\": \\\"\\\",\\n  \\\"suggested_response\\\": \\\"\\\"\\n}\"}]}]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -600,
+        900
+      ],
+      "id": "1cb8daa0-7ac5-4dcb-adba-b1d55496ab15",
+      "name": "Gemini Reply Classifier"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.candidates?.[0]?.content?.parts?.[0]?.text || '{}';\nconst clean = raw.replace(/^```json\\s*/i, '').replace(/^```/i, '').replace(/```$/i, '').trim();\nconst parsed = JSON.parse(clean);\nreturn [{ json: { ...$('Normalize Reply').first().json, ...parsed } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        900
+      ],
+      "id": "7d5d82fe-c5b7-4af9-908a-4798a75eef9a",
+      "name": "Parse Reply JSON"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=Reply from {{$json.from_email}}\\nClassification: {{$json.classification}}\\nReason: {{$json.reason}}\\n\\nSuggested Response:\\n{{$json.suggested_response}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -120,
+        900
+      ],
+      "id": "0fc4a130-759f-412b-a8ef-9d8afccbb72f",
+      "name": "Send Reply Approval"
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Telegram Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Telegram Input": {
+      "main": [
+        [
+          {
+            "node": "Read Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Leads": {
+      "main": [
+        [
+          {
+            "node": "Match Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match Lead": {
+      "main": [
+        [
+          {
+            "node": "Route Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Callback": {
+      "main": [
+        [
+          {
+            "node": "Prepare Approve Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Reject Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Regenerate Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Approve Update": {
+      "main": [
+        [
+          {
+            "node": "Upsert Lead Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Reject Update": {
+      "main": [
+        [
+          {
+            "node": "Upsert Lead Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Regenerate Update": {
+      "main": [
+        [
+          {
+            "node": "Upsert Lead Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Schedule": {
+      "main": [
+        [
+          {
+            "node": "Read Config",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read Leads For Send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Config": {
+      "main": [
+        [
+          {
+            "node": "Select Approved Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Leads For Send": {
+      "main": [
+        [
+          {
+            "node": "Select Approved Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Approved Leads": {
+      "main": [
+        [
+          {
+            "node": "Send Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Gmail": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sent Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sent Update": {
+      "main": [
+        [
+          {
+            "node": "Upsert Sent Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Reply": {
+      "main": [
+        [
+          {
+            "node": "Gemini Reply Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Reply Classifier": {
+      "main": [
+        [
+          {
+            "node": "Parse Reply JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Reply JSON": {
+      "main": [
+        [
+          {
+            "node": "Send Reply Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "versionCounter": 1
+}

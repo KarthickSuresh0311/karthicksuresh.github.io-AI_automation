@@ -1,0 +1,222 @@
+{
+  "name": "Agency Outbound - 01 Lead Intake",
+  "description": "Reads RawLeads from Google Sheets, normalizes rows, filters duplicates, and appends clean leads into Leads.",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -760,
+        220
+      ],
+      "id": "0f13bd55-bf1d-4f5d-8e80-4bc0dab9cb2e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "RawLeads",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -540,
+        220
+      ],
+      "id": "5cf61486-ad7f-4d5d-8e3e-50bf2b6b0868",
+      "name": "Read RawLeads"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\nreturn rows\n  .filter(({ json }) => String(json.processed || '').toLowerCase() !== 'true')\n  .filter(({ json }) => json.email && json.company)\n  .map(({ json }) => {\n    const email = String(json.email || '').toLowerCase().trim();\n    const website = String(json.website || '').replace(/\\/$/, '').trim();\n    const company = String(json.company || '').trim();\n    const name = String(json.name || '').trim();\n    const leadId = email || `${company}-${name}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');\n    return {\n      json: {\n        lead_id: leadId,\n        source: json.source || 'rawleads',\n        name,\n        role: String(json.role || '').trim(),\n        company,\n        website,\n        email,\n        location: String(json.location || '').trim(),\n        notes: String(json.notes || '').trim(),\n        status: 'new',\n        approval_state: '',\n        followup_step: 0,\n        reply_state: '',\n        error: ''\n      }\n    };\n  });"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        220
+      ],
+      "id": "1db6f319-7fcd-4c7d-b339-c45dcc683c54",
+      "name": "Normalize Leads"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -320,
+        420
+      ],
+      "id": "1dcaee8f-4090-467d-a6fe-e5d14c9fdf75",
+      "name": "Read Leads"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -80,
+        300
+      ],
+      "id": "2e055cfb-d0a3-472c-8f57-76ac388a3537",
+      "name": "Merge Raw And Existing"
+    },
+    {
+      "parameters": {
+        "jsCode": "const [incoming, existing] = $input.all().reduce((acc, item) => {\n  if (item.json.lead_id && item.json.status === 'new') acc[0].push(item.json);\n  else acc[1].push(item.json);\n  return acc;\n}, [[], []]);\nconst existingEmails = new Set(existing.map((row) => String(row.email || '').toLowerCase().trim()).filter(Boolean));\nconst existingIds = new Set(existing.map((row) => String(row.lead_id || '').trim()).filter(Boolean));\nreturn incoming\n  .filter((row) => !existingEmails.has(row.email) && !existingIds.has(row.lead_id))\n  .map((row) => ({ json: row }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        300
+      ],
+      "id": "bc4c2a8f-91ce-4f91-986f-e13de8f8cdac",
+      "name": "Filter Duplicates"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        380,
+        300
+      ],
+      "id": "564162c8-b10a-40ab-b2b5-964117dd6c6a",
+      "name": "Append Leads"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read RawLeads",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RawLeads": {
+      "main": [
+        [
+          {
+            "node": "Normalize Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Leads": {
+      "main": [
+        [
+          {
+            "node": "Merge Raw And Existing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Leads": {
+      "main": [
+        [
+          {
+            "node": "Merge Raw And Existing",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Raw And Existing": {
+      "main": [
+        [
+          {
+            "node": "Filter Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Append Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "versionCounter": 1
+}
