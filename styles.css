@@ -605,6 +605,7 @@ h2 {
 .outcomes-grid,
 .roi-grid,
 .offer-grid,
+.proof-grid,
 .faq-list {
   display: grid;
   gap: 14px;
@@ -618,7 +619,8 @@ h2 {
 .architecture-grid,
 .outcomes-grid,
 .roi-grid,
-.offer-grid {
+.offer-grid,
+.proof-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -627,6 +629,7 @@ h2 {
 .outcome-card,
 .roi-card,
 .offer-card,
+.proof-card,
 .faq-item {
   padding: 28px;
 }
@@ -716,10 +719,15 @@ h2 {
 }
 
 .offer-card,
+.proof-card,
 .faq-item {
   border: 1px solid var(--border);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
   box-shadow: var(--shadow);
+}
+
+.proof-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .offer-label {
@@ -1140,6 +1148,7 @@ h2 {
 .outcomes-grid .reveal-child:nth-child(1),
 .roi-grid .reveal-child:nth-child(1),
 .offer-grid .reveal-child:nth-child(1),
+.proof-grid .reveal-child:nth-child(1),
 .faq-list .reveal-child:nth-child(1),
 .process-steps .reveal-child:nth-child(1),
 .contact-proof .reveal-child:nth-child(1) {
@@ -1152,6 +1161,7 @@ h2 {
 .outcomes-grid .reveal-child:nth-child(2),
 .roi-grid .reveal-child:nth-child(2),
 .offer-grid .reveal-child:nth-child(2),
+.proof-grid .reveal-child:nth-child(2),
 .faq-list .reveal-child:nth-child(2),
 .process-steps .reveal-child:nth-child(2),
 .contact-proof .reveal-child:nth-child(2) {
@@ -1163,6 +1173,7 @@ h2 {
 .outcomes-grid .reveal-child:nth-child(3),
 .roi-grid .reveal-child:nth-child(3),
 .offer-grid .reveal-child:nth-child(3),
+.proof-grid .reveal-child:nth-child(3),
 .faq-list .reveal-child:nth-child(3),
 .process-steps .reveal-child:nth-child(3),
 .contact-proof .reveal-child:nth-child(3) {
@@ -1292,6 +1303,7 @@ h2 {
   .outcomes-grid,
   .roi-grid,
   .offer-grid,
+  .proof-grid,
   .faq-list,
   .process-steps,
   .case-card {
