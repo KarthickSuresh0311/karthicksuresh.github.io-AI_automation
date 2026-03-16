@@ -8,7 +8,6 @@ GitHub Pages-ready portfolio website focused on client conversion for AI and n8n
 - `styles.css` - theme, layout, animations
 - `script.js` - smooth interactions, reveal effects, email form handler
 - `workflows/` - sanitized workflow exports for portfolio showcase
-- `systems/agency-outbound/` - Telegram approval outbound system spec, prompts, and importable n8n templates
 
 ## Publish on GitHub Pages
 
