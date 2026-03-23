@@ -606,6 +606,7 @@ h2 {
 .roi-grid,
 .offer-grid,
 .proof-grid,
+.gallery-grid,
 .faq-list {
   display: grid;
   gap: 14px;
@@ -620,7 +621,8 @@ h2 {
 .outcomes-grid,
 .roi-grid,
 .offer-grid,
-.proof-grid {
+.proof-grid,
+.gallery-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -630,6 +632,7 @@ h2 {
 .roi-card,
 .offer-card,
 .proof-card,
+.gallery-card,
 .faq-item {
   padding: 28px;
 }
@@ -720,6 +723,7 @@ h2 {
 
 .offer-card,
 .proof-card,
+.gallery-card,
 .faq-item {
   border: 1px solid var(--border);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
@@ -727,6 +731,10 @@ h2 {
 }
 
 .proof-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gallery-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -759,6 +767,34 @@ h2 {
 
 .faq-list {
   max-width: 980px;
+}
+
+.gallery-card {
+  margin: 0;
+  padding: 18px;
+}
+
+.gallery-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  border: 1px solid #313131;
+  background: #0d0d0d;
+}
+
+.gallery-card figcaption {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.gallery-card strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text);
+  font-family: "Syne", sans-serif;
+  font-size: 1rem;
 }
 
 .faq-item {
@@ -1149,6 +1185,7 @@ h2 {
 .roi-grid .reveal-child:nth-child(1),
 .offer-grid .reveal-child:nth-child(1),
 .proof-grid .reveal-child:nth-child(1),
+.gallery-grid .reveal-child:nth-child(1),
 .faq-list .reveal-child:nth-child(1),
 .process-steps .reveal-child:nth-child(1),
 .contact-proof .reveal-child:nth-child(1) {
@@ -1162,6 +1199,7 @@ h2 {
 .roi-grid .reveal-child:nth-child(2),
 .offer-grid .reveal-child:nth-child(2),
 .proof-grid .reveal-child:nth-child(2),
+.gallery-grid .reveal-child:nth-child(2),
 .faq-list .reveal-child:nth-child(2),
 .process-steps .reveal-child:nth-child(2),
 .contact-proof .reveal-child:nth-child(2) {
@@ -1174,6 +1212,7 @@ h2 {
 .roi-grid .reveal-child:nth-child(3),
 .offer-grid .reveal-child:nth-child(3),
 .proof-grid .reveal-child:nth-child(3),
+.gallery-grid .reveal-child:nth-child(3),
 .faq-list .reveal-child:nth-child(3),
 .process-steps .reveal-child:nth-child(3),
 .contact-proof .reveal-child:nth-child(3) {
@@ -1304,6 +1343,7 @@ h2 {
   .roi-grid,
   .offer-grid,
   .proof-grid,
+  .gallery-grid,
   .faq-list,
   .process-steps,
   .case-card {

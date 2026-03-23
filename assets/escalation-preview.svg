@@ -1,0 +1,39 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" fill="#0B0B0B"/>
+  <rect x="42" y="38" width="1116" height="684" rx="26" fill="#141414" stroke="#2A2A2A"/>
+  <rect x="78" y="78" width="1044" height="56" rx="16" fill="#1B1B1B" stroke="#2A2A2A"/>
+  <text x="108" y="114" fill="#F1EDE7" font-family="Arial, sans-serif" font-size="24" font-weight="700">Sample Workflow Preview</text>
+  <text x="878" y="114" fill="#E63329" font-family="Arial, sans-serif" font-size="18" font-weight="700">Urgent Escalation</text>
+
+  <circle cx="216" cy="250" r="94" fill="#171717" stroke="#333333"/>
+  <text x="172" y="236" fill="#F0B26F" font-family="Arial, sans-serif" font-size="16" font-weight="700">Trigger</text>
+  <text x="147" y="272" fill="#F1EDE7" font-family="Arial, sans-serif" font-size="28" font-weight="700">Gmail</text>
+
+  <circle cx="600" cy="250" r="94" fill="#171717" stroke="#333333"/>
+  <text x="566" y="236" fill="#F0B26F" font-family="Arial, sans-serif" font-size="16" font-weight="700">Check</text>
+  <text x="545" y="272" fill="#F1EDE7" font-family="Arial, sans-serif" font-size="28" font-weight="700">If Urgent</text>
+
+  <circle cx="984" cy="250" r="94" fill="#171717" stroke="#333333"/>
+  <text x="953" y="236" fill="#F0B26F" font-family="Arial, sans-serif" font-size="16" font-weight="700">Alert</text>
+  <text x="949" y="272" fill="#F1EDE7" font-family="Arial, sans-serif" font-size="28" font-weight="700">SMS</text>
+
+  <path d="M310 250H506" stroke="#E63329" stroke-width="6" stroke-linecap="round"/>
+  <path d="M694 250H890" stroke="#E63329" stroke-width="6" stroke-linecap="round"/>
+  <text x="546" y="204" fill="#A7A097" font-family="Arial, sans-serif" font-size="16">priority branch</text>
+
+  <rect x="84" y="388" width="1048" height="264" rx="24" fill="#111111" stroke="#2D2D2D"/>
+  <text x="116" y="432" fill="#F1EDE7" font-family="Arial, sans-serif" font-size="22" font-weight="700">Walkthrough poster</text>
+  <text x="116" y="468" fill="#A7A097" font-family="Arial, sans-serif" font-size="18">Use this as a visual stand-in until you record a real demo. It is honest because it is clearly labeled as a generated preview.</text>
+
+  <rect x="116" y="512" width="308" height="96" rx="18" fill="#171717" stroke="#2F2F2F"/>
+  <text x="142" y="552" fill="#F0B26F" font-family="Arial, sans-serif" font-size="16" font-weight="700">Good first-project pattern</text>
+  <text x="142" y="582" fill="#A7A097" font-family="Arial, sans-serif" font-size="17">Simple branch, fast business value</text>
+
+  <rect x="446" y="512" width="308" height="96" rx="18" fill="#171717" stroke="#2F2F2F"/>
+  <text x="472" y="552" fill="#F0B26F" font-family="Arial, sans-serif" font-size="16" font-weight="700">Proof angle</text>
+  <text x="472" y="582" fill="#A7A097" font-family="Arial, sans-serif" font-size="17">Shows triggers, conditions, and escalation logic</text>
+
+  <rect x="776" y="512" width="308" height="96" rx="18" fill="#171717" stroke="#2F2F2F"/>
+  <text x="802" y="552" fill="#F0B26F" font-family="Arial, sans-serif" font-size="16" font-weight="700">Video note</text>
+  <text x="802" y="582" fill="#A7A097" font-family="Arial, sans-serif" font-size="17">Replace with a real recording when available</text>
+</svg>
