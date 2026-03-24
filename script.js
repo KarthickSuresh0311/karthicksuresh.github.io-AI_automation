@@ -1,4 +1,24 @@
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const siteNav = document.querySelector(".site-nav");
+const navToggle = document.querySelector(".nav-toggle");
+const navLinks = document.querySelectorAll(".nav-links a");
+
+if (siteNav && navToggle) {
+  const closeNav = () => {
+    siteNav.classList.remove("nav-open");
+    navToggle.setAttribute("aria-expanded", "false");
+  };
+
+  navToggle.addEventListener("click", () => {
+    const isOpen = navToggle.getAttribute("aria-expanded") === "true";
+    navToggle.setAttribute("aria-expanded", String(!isOpen));
+    siteNav.classList.toggle("nav-open", !isOpen);
+  });
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", closeNav);
+  });
+}
 
 const yearEl = document.getElementById("year");
 if (yearEl) {
@@ -133,11 +153,11 @@ if (form) {
 
       form.reset();
       if (formStatus) {
-        formStatus.textContent = "Request sent. Check your inbox for the FormSubmit activation email if this is the first submission.";
+        formStatus.textContent = "Request sent. I will review the details and reply with the best workflow audit direction.";
       }
     } catch (error) {
       if (formStatus) {
-        formStatus.textContent = "Form submit failed. You can retry in a moment or email karthicksuresh0311@gmail.com directly.";
+        formStatus.textContent = "Form submission failed. Retry in a moment or email karthicksuresh0311@gmail.com directly.";
       }
     }
   });

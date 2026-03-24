@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-FILE="${1:-/home/karthick/karthick-suresh-portfolio/index.html}"
+FILE="${1:-/home/karthick/karthicksuresh.github.io-AI_automation/index.html}"
 
 assert_contains() {
   local pattern="$1"
@@ -12,7 +12,7 @@ assert_contains() {
   fi
 }
 
-assert_contains "See ROI Opportunities"
+assert_contains "Request Workflow Audit"
 assert_contains "Why this is lower-risk than hiring a generic automation freelancer"
 assert_contains "Where ROI usually shows up first"
 assert_contains "What you get in the audit reply"

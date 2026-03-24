@@ -187,6 +187,38 @@ a {
   backdrop-filter: blur(16px);
 }
 
+.nav-toggle {
+  display: none;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  margin: 4px auto;
+  background: currentColor;
+  transition: transform 0.24s ease, opacity 0.24s ease;
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(5.5px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-5.5px) rotate(-45deg);
+}
+
 .nav-logo,
 .footer-logo {
   font-family: "Syne", sans-serif;
@@ -416,6 +448,28 @@ h1 em {
   border-color: var(--accent-warm);
 }
 
+.hero-headshot {
+  margin: 0 0 24px;
+}
+
+.hero-headshot img {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 1px solid rgba(240, 178, 111, 0.25);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  box-shadow: var(--shadow);
+}
+
+.hero-headshot figcaption {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 .hero-stats {
   margin-top: 44px;
   display: grid;
@@ -562,16 +616,25 @@ h1 em {
   transition: transform 0.24s ease, color 0.24s ease;
 }
 
+.tool-badge svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.tool-badge svg circle {
+  fill: currentColor;
+  stroke: none;
+}
+
 .tool-badge:hover {
   transform: translateY(-2px);
   color: var(--text);
-}
-
-.tool-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
 }
 
 .section {
@@ -1325,11 +1388,27 @@ h2 {
     padding-top: 16px;
   }
 
+  .nav-toggle {
+    display: inline-block;
+    margin-left: auto;
+  }
+
   .nav-links {
+    display: none;
     order: 3;
     width: 100%;
-    flex-wrap: wrap;
-    gap: 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 0 4px;
+  }
+
+  .site-nav.nav-open .nav-links {
+    display: flex;
+  }
+
+  .site-nav.nav-open .nav-cta {
+    display: inline-flex;
   }
 
   .hero {
@@ -1357,7 +1436,8 @@ h2 {
   }
 
   .btn,
-  .nav-cta {
+  .nav-cta,
+  .nav-links a {
     width: 100%;
   }
 
