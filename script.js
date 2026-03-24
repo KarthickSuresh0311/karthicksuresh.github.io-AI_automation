@@ -7,12 +7,14 @@ if (siteNav && navToggle) {
   const closeNav = () => {
     siteNav.classList.remove("nav-open");
     navToggle.setAttribute("aria-expanded", "false");
+    navToggle.textContent = "☰";
   };
 
   navToggle.addEventListener("click", () => {
     const isOpen = navToggle.getAttribute("aria-expanded") === "true";
     navToggle.setAttribute("aria-expanded", String(!isOpen));
     siteNav.classList.toggle("nav-open", !isOpen);
+    navToggle.textContent = isOpen ? "☰" : "✕";
   });
 
   navLinks.forEach((link) => {

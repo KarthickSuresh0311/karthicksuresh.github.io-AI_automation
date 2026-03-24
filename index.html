@@ -29,17 +29,7 @@
 
   <header class="site-nav">
     <a class="nav-logo" href="#home">Karthick Suresh</a>
-    <button
-      class="nav-toggle"
-      type="button"
-      aria-expanded="false"
-      aria-controls="primaryNav"
-      aria-label="Toggle navigation"
-    >
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Toggle navigation">☰</button>
     <nav id="primaryNav" class="nav-links" aria-label="Primary">
       <a href="#roi">ROI</a>
       <a href="#offer">Start Here</a>
@@ -57,6 +47,8 @@
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-copy reveal reveal-left" data-parallax="0.05">
+          <!-- Owner: add your photo as assets/headshot.jpg -->
+          <img class="hero-headshot-inline hero-seq" src="assets/headshot.jpg" alt="Karthick Suresh" />
           <p class="hero-eyebrow hero-seq"><span></span> Automation systems built around time saved, response speed, and execution reliability</p>
           <h1 class="hero-seq">
             Turn repetitive
@@ -69,7 +61,8 @@
             founder or operator time trapped in repetitive work.
           </p>
           <div class="cta-group hero-seq">
-            <a class="btn btn-primary" href="#contact">Request Workflow Audit</a>
+            <a class="btn btn-primary" href="#contact">Request Free Workflow Audit</a>
+            <a class="btn btn-ghost btn-secondary" href="#work">Review Workflow Proof</a>
           </div>
           <div class="hero-stats hero-seq">
             <div class="stat-card tilt-card">
@@ -88,15 +81,6 @@
         </div>
 
         <aside class="hero-proof reveal reveal-right tilt-card" data-parallax="0.1">
-          <figure class="hero-headshot">
-            <img
-              src="https://avatars.githubusercontent.com/u/129587752?v=4"
-              alt="Portrait of Karthick Suresh"
-              loading="eager"
-              decoding="async"
-            />
-            <figcaption>Builder-led automation delivery with direct implementation access.</figcaption>
-          </figure>
           <div class="proof-label">Why Clients Buy</div>
           <div class="proof-item">
             <div class="proof-icon">01</div>
@@ -134,54 +118,27 @@
       <div class="trust-label">Stack I work inside</div>
       <div class="trust-tools">
         <div class="tool-badge">
-          <svg viewBox="0 0 48 48" aria-hidden="true">
-            <circle cx="12" cy="12" r="6"></circle>
-            <circle cx="36" cy="12" r="6"></circle>
-            <circle cx="24" cy="24" r="6"></circle>
-            <circle cx="12" cy="36" r="6"></circle>
-            <circle cx="36" cy="36" r="6"></circle>
-            <path d="M16 12h14M15 16l6 5M27 21l6-5M15 32l6-5M27 27l6 5"></path>
-          </svg>
+          <img src="https://cdn.simpleicons.org/n8n" width="32" height="32" alt="n8n" />
           n8n
         </div>
         <div class="tool-badge">
-          <svg viewBox="0 0 48 48" aria-hidden="true">
-            <path d="M24 8c4 4 6 7 6 10s-2 6-6 8c4 2 6 5 6 8s-2 6-6 10c-4-4-6-7-6-10s2-6 6-8c-4-2-6-5-6-8s2-6 6-10Z"></path>
-            <path d="M17 15c4 0 7 2 9 6c-4 0-7-2-9-6Zm14 12c-4 0-7-2-9-6c4 0 7 2 9 6Z"></path>
-          </svg>
+          <img src="https://cdn.simpleicons.org/openai" width="32" height="32" alt="OpenAI" />
           OpenAI
         </div>
         <div class="tool-badge">
-          <svg viewBox="0 0 48 48" aria-hidden="true">
-            <path d="M24 6l4.5 10.5L39 21l-10.5 4.5L24 36l-4.5-10.5L9 21l10.5-4.5L24 6Z"></path>
-            <path d="M34 30l2.4 5.6L42 38l-5.6 2.4L34 46l-2.4-5.6L26 38l5.6-2.4L34 30Z"></path>
-          </svg>
+          <img src="https://cdn.simpleicons.org/googlegemini" width="32" height="32" alt="Google Gemini" />
           Gemini
         </div>
         <div class="tool-badge">
-          <svg viewBox="0 0 48 48" aria-hidden="true">
-            <path d="M8 14l16 12l16-12"></path>
-            <path d="M8 14v20h32V14"></path>
-            <path d="M8 34l11-10"></path>
-            <path d="M40 34L29 24"></path>
-          </svg>
+          <img src="https://cdn.simpleicons.org/gmail" width="32" height="32" alt="Gmail" />
           Gmail API
         </div>
         <div class="tool-badge">
-          <svg viewBox="0 0 48 48" aria-hidden="true">
-            <path d="M15 29a5 5 0 1 1-5-5"></path>
-            <path d="M19 15a5 5 0 1 1 5 5"></path>
-            <path d="M33 19a5 5 0 1 1 5 5"></path>
-            <path d="M29 33a5 5 0 1 1-5-5"></path>
-          </svg>
+          <img src="https://cdn.simpleicons.org/slack" width="32" height="32" alt="Slack" />
           Slack
         </div>
         <div class="tool-badge">
-          <svg viewBox="0 0 48 48" aria-hidden="true">
-            <path d="M14 8h16l8 8v24H14z"></path>
-            <path d="M30 8v8h8"></path>
-            <path d="M19 24h14M19 30h14M19 18h8"></path>
-          </svg>
+          <img src="https://cdn.simpleicons.org/googlesheets" width="32" height="32" alt="Google Sheets" />
           Google Sheets
         </div>
         <div class="tool-badge">
@@ -641,10 +598,11 @@
           </div>
         </div>
 
+        <!-- PLACEHOLDER - owner must replace with real Formspree endpoint after signing up at formspree.io -->
         <form
           id="contactForm"
           class="contact-form tilt-card"
-          action="https://formspree.io/f/mdawqblk"
+          action="https://formspree.io/f/PLACEHOLDER"
           method="POST"
         >
           <input type="hidden" name="_subject" value="Portfolio Workflow Plan Request" />
@@ -711,6 +669,8 @@
     <div class="footer-copy">© <span id="year"></span> Karthick Suresh. Built for AI automation work.</div>
     <div class="footer-links">
       <a href="mailto:karthicksuresh0311@gmail.com">Email</a>
+      <!-- Owner: update this LinkedIn URL to your real profile -->
+      <a href="https://linkedin.com/in/karthicksuresh" target="_blank" rel="noopener">LinkedIn</a>
       <a href="#work">Work</a>
     </div>
   </footer>
