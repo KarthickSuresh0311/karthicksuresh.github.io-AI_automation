@@ -28,20 +28,13 @@ if (yearEl) {
 }
 
 const setPageReady = () => {
-  document.body.classList.remove("is-loading");
   document.body.classList.add("page-ready");
 };
 
-if (prefersReducedMotion.matches) {
+if (document.readyState === "complete") {
   setPageReady();
 } else {
-  window.addEventListener(
-    "load",
-    () => {
-      window.setTimeout(setPageReady, 320);
-    },
-    { once: true }
-  );
+  window.addEventListener("load", setPageReady, { once: true });
 }
 
 const revealItems = document.querySelectorAll(".reveal");
@@ -117,7 +110,6 @@ if (form) {
     const tools = document.getElementById("tools")?.value.trim() || "";
     const team = document.getElementById("team")?.value.trim() || "";
     const priority = document.getElementById("priority")?.value || "";
-    const budget = document.getElementById("budget")?.value || "";
     formData.set("_subject", `Workflow Plan Request - ${business || name || "New Lead"}`);
     formData.set("_replyto", email);
     formData.set(
@@ -129,7 +121,6 @@ if (form) {
         `Current Tools: ${tools || "Not provided"}`,
         `Team Context: ${team || "Not provided"}`,
         `Primary Priority: ${priority || "Not provided"}`,
-        `Budget Range: ${budget || "Not provided"}`,
         "",
         "Automation Need:",
         need,

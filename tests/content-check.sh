@@ -12,13 +12,13 @@ assert_contains() {
   fi
 }
 
-assert_contains "Request Workflow Audit"
+assert_contains "Request Agency Workflow Audit"
 assert_contains "Why this is lower-risk than hiring a generic automation freelancer"
 assert_contains "Where ROI usually shows up first"
 assert_contains "What you get in the audit reply"
 assert_contains "Start Here"
-assert_contains "Automation Audit + Workflow Plan"
+assert_contains "Agency Workflow Audit + Build Direction"
 assert_contains "Who this is for"
 assert_contains "FAQ"
 assert_contains "Proof You Can Review"
-assert_contains "I do not use invented client results"
+assert_contains "This portfolio stays grounded in what is real today"
