@@ -1,26 +1,36 @@
-# Karthick Suresh Portfolio
+# n8n Automation Workflows for Agencies
 
-GitHub Pages-ready portfolio website focused on client conversion for AI and n8n automation services.
+AI-powered workflow systems built for agencies dealing with manual ops drag.
+Lead routing, inbox automation, reporting, and alert systems using n8n, Gemini, OpenAI, and Gmail API.
 
-## Local structure
+## Workflows
 
-- `index.html` - main website
-- `styles.css` - theme, layout, animations
-- `script.js` - smooth interactions, reveal effects, email form handler
-- `workflows/` - sanitized workflow exports for portfolio showcase
+### 1. Email Lead Automation System
+Catches inbound leads from Gmail, classifies intent with Gemini, scores priority, drafts replies, and logs everything to Google Sheets.
 
-## Publish on GitHub Pages
+**Stack:** n8n · Gemini · Gmail API · Slack · Google Sheets  
+**Saves:** 5-6 hours/week for agencies handling 20-30 inbound leads  
+**JSON:** [Open workflow](workflows/u9iGGbAgyBDFCEFM2eRP2.json)
 
-1. Create a GitHub repo (example: `karthick-suresh-portfolio`).
-2. Upload all files from this folder to the repo root.
-3. In GitHub repo settings, enable **Pages**:
-   - Source: `Deploy from a branch`
-   - Branch: `main` and folder `/ (root)`
-4. Save and wait for deployment.
-5. Your site URL will appear in the Pages section.
+**Flow:**
+Gmail trigger → extract lead data → Gemini classification → priority scoring → draft reply → Slack alert → log to Sheets
 
-## Quick edits
+---
 
-- Change email in `index.html` and `script.js`.
-- Update services and project text in `index.html`.
-- Add/remove workflow files inside `workflows/`.
+### 2. Multi-Client AI Monitoring System
+Pulls ad performance data, scores campaigns, detects anomalies, and fires Slack alerts across multiple client accounts.
+
+**Stack:** n8n · Google Sheets · Slack · REST APIs  
+**Saves:** Manual account checking across multiple clients  
+**JSON:** [Open workflow](workflows/b5lPrh5jqMojRNDYWneIk.json)
+
+**Flow:**
+Scheduled pull → normalize data → score performance → risk rules → Slack alerts → reporting sink
+
+---
+
+## About
+Built by [Karthick Suresh](https://linkedin.com/in/karthicksuresh) — n8n automation specialist for agencies.
+
+Portfolio: [karthicksuresh0311.github.io](https://karthicksuresh0311.github.io/karthicksuresh.github.io-AI_automation/)  
+Email: karthicksuresh0311@gmail.com
